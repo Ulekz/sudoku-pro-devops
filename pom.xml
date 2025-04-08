@@ -113,7 +113,6 @@
     </dependency>
   </dependencies>
 
-
   <repositories>
     <repository>
       <id>central</id>
@@ -128,7 +127,6 @@
     </pluginRepository>
   </pluginRepositories>
 
-
   <build>
     <plugins>
       <plugin>
@@ -140,6 +138,7 @@
           <target>17</target>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-maven-plugin</artifactId>
@@ -159,11 +158,17 @@
           </execution>
         </executions>
       </plugin>
+
       <!-- Checkstyle Plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>3.1.2</version>
+        <configuration>
+          <configLocation>config/checkstyle.xml</configLocation>
+          <suppressionsLocation>config/suppressions.xml</suppressionsLocation>
+          <encoding>UTF-8</encoding>
+        </configuration>
         <executions>
           <execution>
             <phase>verify</phase>
@@ -179,13 +184,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
         <version>3.15.0</version>
-
-        <configuration>
-          <configLocation>config/checkstyle.xml</configLocation>
-          <suppressionsLocation>config/suppressions.xml</suppressionsLocation>
-          <encoding>UTF-8</encoding>
-        </configuration>
-
         <executions>
           <execution>
             <phase>verify</phase>
