@@ -129,6 +129,7 @@
 
   <build>
     <plugins>
+      <!-- Compiler -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -139,6 +140,7 @@
         </configuration>
       </plugin>
 
+      <!-- JavaFX -->
       <plugin>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-maven-plugin</artifactId>
@@ -159,21 +161,17 @@
         </executions>
       </plugin>
 
-      <!-- Checkstyle Plugin -->
+      <!-- Checkstyle -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>3.1.2</version>
         <configuration>
           <configLocation>config/checkstyle.xml</configLocation>
+          <suppressionsLocation>config/checkstyle-suppressions.xml</suppressionsLocation>
           <encoding>UTF-8</encoding>
-          <includeTestSourceDirectory>true</includeTestSourceDirectory>
           <consoleOutput>true</consoleOutput>
           <failsOnError>true</failsOnError>
-          <violationSeverity>warning</violationSeverity>
-          <excludeFiles>
-            <excludeFile>**/Main.java</excludeFile>
-          </excludeFiles>
         </configuration>
         <executions>
           <execution>
@@ -185,7 +183,7 @@
         </executions>
       </plugin>
 
-      <!-- PMD Plugin -->
+      <!-- PMD -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
@@ -200,7 +198,7 @@
         </executions>
       </plugin>
 
-      <!-- SpotBugs Plugin -->
+      <!-- SpotBugs -->
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
