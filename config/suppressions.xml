@@ -2,7 +2,8 @@
 <!DOCTYPE suppressions PUBLIC
         "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
         "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
 <suppressions>
-    <!-- Ejemplo: ignora Main.java -->
-    <suppress files=".*Main\.java" />
+    <!-- Ejemplo para ignorar todo lo que esté en Main.java -->
+    <suppress files=".*Main\.java" checks=".*" />
 </suppressions>
