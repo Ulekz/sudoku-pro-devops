@@ -2,34 +2,35 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_PROJECT_NAME = "sudoku"
+        COMPOSE_PROJECT_NAME = "sudoku" // evita conflictos de nombres
     }
 
     stages {
-        stage('Preparar entorno') {
+        stage('Preparar') {
             steps {
-                echo '✅ Código ya clonado por Jenkins'
+                echo 'Código ya clonado por Jenkins 🙂'
             }
         }
 
         stage('Construir JAR') {
             steps {
-                echo '⚙️ Compilando JAR...'
+                echo 'Compilando el proyecto con Maven...'
                 sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('Construir imagen Docker') {
             steps {
-                echo '🐳 Construyendo imagen Docker...'
+                echo 'Construyendo imagen Docker...'
                 sh 'docker build -t sudoku-pro .'
             }
         }
 
-        stage('Desplegar con Docker Compose') {
+        stage('Levantar contenedores') {
             steps {
-                echo '🚀 Levantando contenedores...'
+                echo 'Deteniendo contenedores anteriores (si hay)...'
                 sh 'docker-compose down'
+                echo 'Levantando aplicación con Docker Compose...'
                 sh 'docker-compose up -d --build'
             }
         }
@@ -37,10 +38,10 @@ pipeline {
 
     post {
         success {
-            echo '🎉 ¡Despliegue exitoso!'
+            echo '¡Despliegue exitoso!'
         }
         failure {
-            echo '❌ Ocurrió un error en el pipeline.'
+            echo 'Algo falló durante el despliegue.'
         }
     }
 }
