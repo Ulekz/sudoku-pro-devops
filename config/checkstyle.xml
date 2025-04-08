@@ -4,8 +4,12 @@
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
+    <!-- Excluir archivos específicos -->
+    <module name="SuppressionFilter">
+        <property name="file" value="config/suppressions.xml"/>
+    </module>
+
     <module name="TreeWalker">
-        <!-- Reglas comunes que rara vez causan errores -->
         <module name="EmptyBlock"/>
         <module name="NeedBraces"/>
         <module name="SimplifyBooleanExpression"/>
