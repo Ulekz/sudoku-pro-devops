@@ -166,9 +166,10 @@
         <version>3.1.2</version>
         <configuration>
           <configLocation>config/checkstyle.xml</configLocation>
-          <suppressionsLocation>config/checkstyle-suppressions.xml</suppressionsLocation>
           <suppressionsFileExpression>${basedir}/config/checkstyle-suppressions.xml</suppressionsFileExpression>
           <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
         </configuration>
         <executions>
           <execution>
@@ -179,6 +180,7 @@
           </execution>
         </executions>
       </plugin>
+
 
       <!-- PMD Plugin -->
       <plugin>
