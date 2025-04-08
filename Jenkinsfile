@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_PROJECT_NAME = "sudoku" // evita conflictos de nombres
+        COMPOSE_PROJECT_NAME = "sudoku"
     }
 
     stages {
         stage('Preparar') {
             steps {
-                echo 'Código ya clonado por Jenkins 🙂'
+                echo 'Código clonado por Jenkins.'
             }
         }
 
