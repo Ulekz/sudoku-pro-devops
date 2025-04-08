@@ -9,7 +9,7 @@ services:
       - "${JENKINS_PORT}:8080"
       - "${JENKINS_AGENT_PORT}:50000"
     volumes:
-      - ${JENKINS_VOLUME}:/var/jenkins_home
+      - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - ${NETWORK_NAME}
@@ -31,4 +31,4 @@ networks:
     driver: bridge
 
 volumes:
-  ${JENKINS_VOLUME}:
+  jenkins_home:
