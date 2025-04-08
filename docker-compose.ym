@@ -10,8 +10,21 @@ services:
       - "${JENKINS_AGENT_PORT}:50000"
     volumes:
       - ${JENKINS_VOLUME}:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - ${NETWORK_NAME}
+
+  sudoku-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sudoku-app
+    ports:
+      - "${SUDOKU_PORT}:8080"
+    networks:
+      - ${NETWORK_NAME}
+    depends_on:
+      - jenkins
 
 networks:
   ${NETWORK_NAME}:
