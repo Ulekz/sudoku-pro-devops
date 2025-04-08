@@ -167,6 +167,7 @@
         <configuration>
           <configLocation>config/checkstyle.xml</configLocation>
           <suppressionsLocation>config/suppressions.xml</suppressionsLocation>
+          <suppressionsFileExpression>${basedir}/config/suppressions.xml</suppressionsFileExpression>
           <encoding>UTF-8</encoding>
         </configuration>
         <executions>
