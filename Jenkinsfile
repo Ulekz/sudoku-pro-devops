@@ -1,5 +1,11 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.9.6-eclipse-temurin-17'
+            args '-v $HOME/.m2:/root/.m2' // Usa el cache local de Maven
+        }
+    }
+
 
     environment {
         SSH_KEY = "~/.ssh/docker-key.pem"
