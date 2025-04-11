@@ -2,22 +2,22 @@ pipeline {
     agent any
 
     environment {
-        SSH_KEY = "~/.ssh/docker-key.pem"     // Ruta a la clave PEM en Jenkins
-        REMOTE_USER = "ec2-user"              // Usuario de la VM con Docker
-        REMOTE_HOST = "3.86.58.76"          // IP pública de la VM con Docker (actualízala si cambia)
-        REMOTE_PATH = "/home/ec2-user/app"    // Carpeta donde se copiará el proyecto
+        SSH_KEY = "~/.ssh/docker-key.pem"
+        REMOTE_USER = "ec2-user"
+        REMOTE_HOST = "3.86.58.76"
+        REMOTE_PATH = "/home/ec2-user/app"
     }
 
     stages {
         stage('Preparar entorno') {
             steps {
-                echo 'Clonación de código completada. Iniciando despliegue remoto.'
+                echo 'Iniciando pipeline: conexión y despliegue remoto.'
             }
         }
 
         stage('Copiar archivos al servidor remoto') {
             steps {
-                echo 'Copiando proyecto al servidor Docker...'
+                echo 'Copiando archivos del proyecto al servidor remoto con Docker...'
                 sh '''
                     ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "mkdir -p ${REMOTE_PATH}"
                     scp -i ${SSH_KEY} -o StrictHostKeyChecking=no -r * ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PATH}/
@@ -25,9 +25,9 @@ pipeline {
             }
         }
 
-        stage('Build & Docker run en servidor remoto') {
+        stage('Build & Docker Run en remoto') {
             steps {
-                echo 'Compilando y desplegando en la VM con Docker...'
+                echo 'Conectando al servidor remoto, construyendo JAR y desplegando imagen Docker...'
                 sh '''
                     ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
                         cd ${REMOTE_PATH} &&
@@ -44,10 +44,10 @@ pipeline {
 
     post {
         success {
-            echo 'Despliegue remoto completado con éxito.'
+            echo 'Despliegue remoto completado exitosamente.'
         }
         failure {
-            echo 'Falló el proceso de despliegue.'
+            echo 'Error durante el proceso de despliegue remoto.'
         }
     }
 }
