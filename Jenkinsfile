@@ -23,7 +23,7 @@ pipeline {
                 echo '📂 Preparando archivo .jar en carpeta html/'
                 sh '''
                     mkdir -p html
-                    cp target/sudoku-1.0-jar-with-dependencies.jar html/sudoku.jar
+                    sh 'cp target/SudokuV1-1.0-SNAPSHOT.jar html/sudoku.jar'
                 '''
             }
         }
