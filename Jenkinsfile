@@ -2,10 +2,8 @@ pipeline {
     agent any
 
     environment {
-        // Usuario e IP actual de la VM donde está Docker
         DOCKER_VM_USER = 'ec2-user'
-        DOCKER_VM_IP = '100.26.187.88' // ⚠️ Actualiza si cambia
-        // Ruta de la clave privada en el servidor Jenkins
+        DOCKER_VM_IP = '100.26.187.88'
         REMOTE_KEY = '/var/lib/jenkins/.ssh/docker-key.pem'
     }
 
@@ -20,35 +18,36 @@ pipeline {
         stage('📦 Preparar .jar para Docker') {
             steps {
                 echo '📂 Preparando archivo .jar en carpeta html/'
-                sh '''
-                    mkdir -p html
-                    ls -lh target/ && test -f target/SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar
-                    cp target/SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar html/sudoku.jar
-                '''
+                script {
+                    def jarPath = 'target/SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar'
+                    sh "mkdir -p html"
+                    sh "test -f ${jarPath} || (echo '❌ El .jar no fue encontrado' && exit 1)"
+                    sh "cp ${jarPath} html/sudoku.jar"
+                }
             }
         }
 
         stage('🚀 Copiar archivos a VM Docker') {
             steps {
                 echo '📤 Transfiriendo archivos a la máquina Docker...'
-                sh '''
+                sh """
                     scp -i $REMOTE_KEY -o StrictHostKeyChecking=no -r * \
                     $DOCKER_VM_USER@$DOCKER_VM_IP:/home/ec2-user/sudoku-deploy
-                '''
+                """
             }
         }
 
         stage('🐳 Desplegar aplicación con Docker Compose') {
             steps {
                 echo '⚙️ Ejecutando docker-compose remotamente...'
-                sh '''
+                sh """
                     ssh -i $REMOTE_KEY -o StrictHostKeyChecking=no $DOCKER_VM_USER@$DOCKER_VM_IP '
                         cd /home/ec2-user/sudoku-deploy &&
                         docker-compose down || true &&
                         docker-compose build &&
                         docker-compose up -d
                     '
-                '''
+                """
             }
         }
     }
