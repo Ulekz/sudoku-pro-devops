@@ -17,12 +17,22 @@ pipeline {
 
         stage('📦 Preparar .jar para Docker') {
             steps {
-                echo '📂 Preparando archivo .jar en carpeta html/'
+                echo '📂 Validando y copiando archivo .jar generado...'
                 script {
-                    def jarPath = 'target/SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar'
+                    def jarPath = "target/SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar"
+                    def outputPath = "html/sudoku.jar"
+
+                    // Crear carpeta html
                     sh "mkdir -p html"
-                    sh "test -f ${jarPath} || (echo '❌ El .jar no fue encontrado' && exit 1)"
-                    sh "cp ${jarPath} html/sudoku.jar"
+
+                    // Validar existencia del archivo
+                    def jarExists = fileExists(jarPath)
+                    if (!jarExists) {
+                        error "❌ Archivo JAR no encontrado en ${jarPath}"
+                    }
+
+                    // Copiar .jar a html/
+                    sh "cp ${jarPath} ${outputPath}"
                 }
             }
         }
