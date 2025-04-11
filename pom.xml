@@ -12,6 +12,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <junit.version>5.10.0</junit.version>
+    <javafx.version>22-ea+11</javafx.version>
   </properties>
 
   <dependencies>
@@ -19,30 +20,30 @@
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
-      <version>22-ea+11</version>
+      <version>${javafx.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
-      <version>22-ea+11</version>
+      <version>${javafx.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-web</artifactId>
-      <version>22-ea+11</version>
+      <version>${javafx.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-swing</artifactId>
-      <version>22-ea+11</version>
+      <version>${javafx.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-media</artifactId>
-      <version>22-ea+11</version>
+      <version>${javafx.version}</version>
     </dependency>
 
-    <!-- Otras dependencias del proyecto -->
+    <!-- Otros componentes -->
     <dependency>
       <groupId>org.controlsfx</groupId>
       <artifactId>controlsfx</artifactId>
@@ -96,6 +97,7 @@
 
   <build>
     <plugins>
+
       <!-- Compiler -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -107,22 +109,43 @@
         </configuration>
       </plugin>
 
-      <!-- JavaFX -->
+      <!-- JavaFX Plugin (para ejecución local si lo necesitas) -->
       <plugin>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-maven-plugin</artifactId>
         <version>0.0.8</version>
+        <configuration>
+          <mainClass>com.ulekz.sudokuv1.HelloApplication</mainClass>
+        </configuration>
+      </plugin>
+
+      <!-- Plugin para JAR ejecutable con dependencias -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>com.ulekz.sudokuv1.HelloApplication</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
         <executions>
           <execution>
-            <id>default-cli</id>
-            <configuration>
-              <mainClass>com.ulekz.sudokuv1/com.ulekz.sudokuv1.HelloApplication</mainClass>
-            </configuration>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
 
-      <!-- Checkstyle con versión segura -->
+      <!-- Checkstyle -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -132,7 +155,7 @@
           <suppressionsLocation>config/suppressions.xml</suppressionsLocation>
           <encoding>UTF-8</encoding>
           <consoleOutput>true</consoleOutput>
-          <failsOnError>false</failsOnError> <!-- NO rompe el build -->
+          <failsOnError>false</failsOnError>
         </configuration>
         <executions>
           <execution>
@@ -171,39 +194,22 @@
         </executions>
       </plugin>
 
+      <!-- JaCoCo -->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.8.8</version>
         <executions>
-          <!-- Prepara el agente de JaCoCo -->
           <execution>
             <id>prepare-agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
+            <goals><goal>prepare-agent</goal></goals>
           </execution>
-          <!-- Genera el reporte tras ejecutar pruebas -->
           <execution>
             <id>report</id>
             <phase>verify</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
+            <goals><goal>report</goal></goals>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>com.sudoku.Main</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
       </plugin>
 
     </plugins>
