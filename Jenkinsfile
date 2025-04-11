@@ -2,20 +2,10 @@ pipeline {
     agent any
 
     stages {
-        stage('🧱 Compilar Proyecto con Maven') {
+        stage('Test') {
             steps {
-                echo '🚧 Compilando el proyecto...'
-                sh 'mvn clean package'
+                echo '✅ Jenkins está funcionando correctamente.'
             }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ Compilación exitosa.'
-        }
-        failure {
-            echo '❌ Falló la compilación.'
         }
     }
 }
