@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        SSH_KEY = "~/.ssh/docker-key.pem"     // 🔐 Ruta a la clave PEM en Jenkins
-        REMOTE_USER = "ec2-user"              // 👤 Usuario de la VM con Docker
-        REMOTE_HOST = "44.202.86.80"          // 🌐 IP pública de la VM con Docker (actualízala si cambia)
-        REMOTE_PATH = "/home/ec2-user/app"    // 📁 Carpeta donde se copiará el proyecto
+        SSH_KEY = "~/.ssh/docker-key.pem"     // Ruta a la clave PEM en Jenkins
+        REMOTE_USER = "ec2-user"              // Usuario de la VM con Docker
+        REMOTE_HOST = "3.86.58.76"          // IP pública de la VM con Docker (actualízala si cambia)
+        REMOTE_PATH = "/home/ec2-user/app"    // Carpeta donde se copiará el proyecto
     }
 
     stages {
@@ -44,10 +44,10 @@ pipeline {
 
     post {
         success {
-            echo '🚀 Despliegue remoto completado con éxito.'
+            echo 'Despliegue remoto completado con éxito.'
         }
         failure {
-            echo '❌ Falló el proceso de despliegue.'
+            echo 'Falló el proceso de despliegue.'
         }
     }
 }
