@@ -2,10 +2,9 @@ pipeline {
     agent any
 
     environment {
-        // Usuario e IP de la VM donde está Docker
+        // Usuario e IP actual de la VM donde está Docker
         DOCKER_VM_USER = 'ec2-user'
-        DOCKER_VM_IP = '44.204.81.122' // ⚠️ Actualiza si cambia
-
+        DOCKER_VM_IP = '100.26.187.88' // ⚠️ Actualiza si cambia
         // Ruta de la clave privada en el servidor Jenkins
         REMOTE_KEY = '/var/lib/jenkins/.ssh/docker-key.pem'
     }
@@ -23,8 +22,8 @@ pipeline {
                 echo '📂 Preparando archivo .jar en carpeta html/'
                 sh '''
                     mkdir -p html
-                    ls -lh target/ && test -f target/SudokuV1-1.0-SNAPSHOT.jar
-                    cp target/SudokuV1-1.0-SNAPSHOT.jar html/sudoku.jar
+                    ls -lh target/ && test -f target/SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar
+                    cp target/SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar html/sudoku.jar
                 '''
             }
         }
