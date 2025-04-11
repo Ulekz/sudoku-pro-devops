@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_VM_USER = 'ec2-user'
-        DOCKER_VM_IP = '54.236.118.67'
+        DOCKER_VM_IP = 'XXX.XXX.XXX.XXX' // ← Reemplaza con la IP actual de la VM Docker
         REMOTE_KEY = '/var/lib/jenkins/.ssh/docker-key.pem'
     }
 
@@ -21,35 +21,30 @@ pipeline {
                 script {
                     def jarPath = "target/SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar"
                     def outputPath = "html/sudoku.jar"
-
-                    // Crear carpeta html
                     sh "mkdir -p html"
-
-                    // Validar existencia del archivo
                     def jarExists = fileExists(jarPath)
                     if (!jarExists) {
                         error "❌ Archivo JAR no encontrado en ${jarPath}"
                     }
-
-                    // Copiar .jar a html/
                     sh "cp ${jarPath} ${outputPath}"
                 }
             }
         }
 
-        stage('🚀 Copiar archivos a VM Docker') {
+        stage('🚀 Transferencia a VM Docker') {
             steps {
-                echo '📤 Transfiriendo archivos a la máquina Docker...'
-                sh """
-                    scp -i $REMOTE_KEY -o StrictHostKeyChecking=no -r * \
-                    $DOCKER_VM_USER@$DOCKER_VM_IP:/home/ec2-user/sudoku-deploy
-                """
+                echo '📤 Enviando solo los archivos necesarios...'
+                sh '''
+                    rsync -avz -e "ssh -i $REMOTE_KEY -o StrictHostKeyChecking=no" \
+                    html/ docker-compose.yml Dockerfile \
+                    $DOCKER_VM_USER@$DOCKER_VM_IP:/home/ec2-user/sudoku-deploy/
+                '''
             }
         }
 
-        stage('🐳 Desplegar aplicación con Docker Compose') {
+        stage('🐳 Docker Compose remoto') {
             steps {
-                echo '⚙️ Ejecutando docker-compose remotamente...'
+                echo '⚙️ Ejecutando docker-compose en la VM Docker...'
                 sh """
                     ssh -i $REMOTE_KEY -o StrictHostKeyChecking=no $DOCKER_VM_USER@$DOCKER_VM_IP '
                         cd /home/ec2-user/sudoku-deploy &&
@@ -68,7 +63,7 @@ pipeline {
             echo "🌐 Accede a: http://$DOCKER_VM_IP:8080/sudoku.jar"
         }
         failure {
-            echo '❌ Algo falló en el pipeline. Revisa los logs para más detalles.'
+            echo '❌ Algo falló. Revisa los logs y permisos de la VM Docker.'
         }
     }
 }
