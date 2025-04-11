@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HOST = 'ec2-user@3.86.58.76'  // IP de la VM Docker
+        DOCKER_HOST = 'ec2-user@18.206.115.220'  // IP de la VM Docker
         REMOTE_PATH = "/home/ec2-user/app"
         PEM_KEY = "/var/lib/jenkins/docker-key.pem"
     }
