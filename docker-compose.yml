@@ -1,19 +1,6 @@
 version: '3.8'
 
 services:
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - devops_net
-
   sudoku-app:
     build:
       context: .
@@ -23,12 +10,8 @@ services:
       - "9090:8080"
     networks:
       - devops_net
-    depends_on:
-      - jenkins
+    restart: unless-stopped
 
 networks:
   devops_net:
     driver: bridge
-
-volumes:
-  jenkins_home:

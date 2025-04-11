@@ -2,39 +2,36 @@ pipeline {
     agent any
 
     environment {
-        REMOTE_HOST = 'ec2-user@44.202.86.80' // <- Reemplaza si cambia la IP
-        REMOTE_PATH = '/home/ec2-user/app'    // <- Donde vive docker-compose.yml
-        SSH_KEY = '/home/jenkins/.ssh/docker-key.pem' // <- Clave que Jenkins usa
+        DOCKER_HOST = 'ec2-user@44.202.86.80'  // Actualiza con la IP pública de la VM Docker
+        REMOTE_PATH = "/home/ec2-user/app"
+        PEM_KEY = "/var/lib/jenkins/docker-key.pem"
     }
 
     stages {
-        stage('Clonar código') {
+        stage('Clonar proyecto') {
             steps {
-                git url: 'https://github.com/TU_USUARIO/Sudoku-Pro.git', branch: 'main'
+                git url: 'https://github.com/Ulekz/sudoku-pro-devops.git', branch: 'main'
             }
         }
 
-        stage('Verificar compilación Maven') {
+        stage('Compilar con Maven') {
             steps {
                 sh 'mvn clean package -DskipTests'
             }
         }
 
-        stage('Copiar proyecto a la VM de Docker') {
+        stage('Copiar archivos por SSH') {
             steps {
-                sh "scp -i ${SSH_KEY} -r . ${REMOTE_HOST}:${REMOTE_PATH}"
+                sh """
+                scp -i ${PEM_KEY} -r * ${DOCKER_HOST}:${REMOTE_PATH}
+                """
             }
         }
 
-        stage('Desplegar remotamente') {
+        stage('Desplegar app Sudoku en Docker') {
             steps {
                 sh """
-                    ssh -i ${SSH_KEY} ${REMOTE_HOST} '
-                        cd ${REMOTE_PATH} &&
-                        docker rm -f sudoku-app || true &&
-                        docker-compose down || true &&
-                        docker-compose up -d --build
-                    '
+                ssh -i ${PEM_KEY} ${DOCKER_HOST} 'cd ${REMOTE_PATH} && docker-compose down && docker-compose up -d --build'
                 """
             }
         }
