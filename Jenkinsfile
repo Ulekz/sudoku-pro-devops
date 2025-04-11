@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_VM_USER = 'ec2-user'
-        DOCKER_VM_IP = 'XXX.XXX.XXX.XXX' // ← Reemplaza con la IP actual de la VM Docker
+        DOCKER_VM_IP = '54.210.172.86' // IP de tu VM Docker
         REMOTE_KEY = '/var/lib/jenkins/.ssh/docker-key.pem'
     }
 
@@ -17,23 +17,22 @@ pipeline {
 
         stage('📦 Preparar .jar para Docker') {
             steps {
-                echo '📂 Validando y copiando archivo .jar generado...'
+                echo '📂 Copiando JAR a carpeta html/...'
                 script {
                     def jarPath = "target/SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar"
                     def outputPath = "html/sudoku.jar"
                     sh "mkdir -p html"
-                    def jarExists = fileExists(jarPath)
-                    if (!jarExists) {
-                        error "❌ Archivo JAR no encontrado en ${jarPath}"
+                    if (!fileExists(jarPath)) {
+                        error "❌ Archivo JAR no encontrado: ${jarPath}"
                     }
                     sh "cp ${jarPath} ${outputPath}"
                 }
             }
         }
 
-        stage('🚀 Transferencia a VM Docker') {
+        stage('🚀 Copiar archivos a VM Docker') {
             steps {
-                echo '📤 Enviando solo los archivos necesarios...'
+                echo '📤 Enviando archivos necesarios vía rsync...'
                 sh '''
                     rsync -avz -e "ssh -i $REMOTE_KEY -o StrictHostKeyChecking=no" \
                     html/ docker-compose.yml Dockerfile \
@@ -42,9 +41,9 @@ pipeline {
             }
         }
 
-        stage('🐳 Docker Compose remoto') {
+        stage('🐳 Desplegar aplicación con Docker') {
             steps {
-                echo '⚙️ Ejecutando docker-compose en la VM Docker...'
+                echo '⚙️ Ejecutando docker-compose remotamente...'
                 sh """
                     ssh -i $REMOTE_KEY -o StrictHostKeyChecking=no $DOCKER_VM_USER@$DOCKER_VM_IP '
                         cd /home/ec2-user/sudoku-deploy &&
@@ -59,11 +58,11 @@ pipeline {
 
     post {
         success {
-            echo '✅ Despliegue exitoso. El .jar está disponible para descarga.'
-            echo "🌐 Accede a: http://$DOCKER_VM_IP:8080/sudoku.jar"
+            echo '✅ Despliegue exitoso 🎉'
+            echo "🌐 El archivo .jar está disponible en: http://$DOCKER_VM_IP:8080/sudoku.jar"
         }
         failure {
-            echo '❌ Algo falló. Revisa los logs y permisos de la VM Docker.'
+            echo '❌ El pipeline falló. Revisa los logs de Jenkins para detalles.'
         }
     }
 }
