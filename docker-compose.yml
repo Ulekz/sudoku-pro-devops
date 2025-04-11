@@ -1,13 +1,9 @@
 version: '3'
 services:
-  sudoku-app:
+  sudoku-server:
     build: .
-    container_name: sudoku_app
+    container_name: sudoku_download
     ports:
-      - "9090:9090"
-    networks:
-      - devops_net
-
-networks:
-  devops_net:
-    driver: bridge
+      - "8080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html

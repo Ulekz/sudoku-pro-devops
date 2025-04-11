@@ -3,10 +3,9 @@ pipeline {
 
     environment {
         JAR_NAME = "SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar"
-        REMOTE_KEY = "/var/lib/jenkins/.ssh/docker-key.pem"
-        DOCKER_VM_IP = "44.211.132.177" // cámbiala si tu IP cambia
-        DOCKER_VM_USER = "ec2-user"
-        REMOTE_DIR = "/home/ec2-user/sudoku-deploy"
+        DOCKER_USER = "ec2-user"
+        DOCKER_HOST = "44.211.132.177"
+        REMOTE_PATH = "/home/ec2-user/sudoku-deploy"
     }
 
     stages {
@@ -30,24 +29,38 @@ pipeline {
             }
         }
 
-        stage('📦 Copiar archivo .jar a la VM Docker') {
+        stage('📦 Copiar archivos a la VM Docker') {
             steps {
-                echo '📤 Copiando el .jar al servidor Docker...'
-                sh '''
-                    rsync -avz -e "ssh -i $REMOTE_KEY -o StrictHostKeyChecking=no" \
-                    target/$JAR_NAME \
-                    $DOCKER_VM_USER@$DOCKER_VM_IP:$REMOTE_DIR/
-                '''
+                echo '📤 Enviando .jar y html/ al servidor Docker...'
+                sh """
+                    rsync -avz -e 'ssh -i /var/lib/jenkins/.ssh/docker-key.pem -o StrictHostKeyChecking=no' target/${JAR_NAME} ${DOCKER_USER}@${DOCKER_HOST}:${REMOTE_PATH}/html/
+                    rsync -avz -e 'ssh -i /var/lib/jenkins/.ssh/docker-key.pem -o StrictHostKeyChecking=no' html/index.html ${DOCKER_USER}@${DOCKER_HOST}:${REMOTE_PATH}/html/
+                    rsync -avz -e 'ssh -i /var/lib/jenkins/.ssh/docker-key.pem -o StrictHostKeyChecking=no' Dockerfile docker-compose.yml ${DOCKER_USER}@${DOCKER_HOST}:${REMOTE_PATH}/
+                """
+            }
+        }
+
+        stage('🐳 Desplegar en Docker') {
+            steps {
+                echo '🚀 Ejecutando docker-compose en la VM Docker...'
+                sh """
+                    ssh -i /var/lib/jenkins/.ssh/docker-key.pem -o StrictHostKeyChecking=no ${DOCKER_USER}@${DOCKER_HOST} '
+                        cd ${REMOTE_PATH} &&
+                        docker-compose down &&
+                        docker-compose build --no-cache &&
+                        docker-compose up -d
+                    '
+                """
             }
         }
     }
 
     post {
         success {
-            echo "🎉 Paso 3 completado correctamente. ¡El .jar fue transferido a Docker VM!"
+            echo "🎉 Despliegue completo. Verifica: http://${DOCKER_HOST}:8080"
         }
         failure {
-            echo "❌ Algo falló en el paso 3. Revisa los errores."
+            echo "❌ Algo falló en el pipeline. Verifica los errores anteriores."
         }
     }
 }
