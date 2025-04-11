@@ -23,8 +23,8 @@ pipeline {
                 echo '📂 Preparando archivo .jar en carpeta html/'
                 sh '''
                     mkdir -p html
-                    sh 'ls -lh target/ && test -f target/SudokuV1-1.0-SNAPSHOT.jar'
-                    sh 'cp target/SudokuV1-1.0-SNAPSHOT.jar html/sudoku.jar'
+                    ls -lh target/ && test -f target/SudokuV1-1.0-SNAPSHOT.jar
+                    cp target/SudokuV1-1.0-SNAPSHOT.jar html/sudoku.jar
                 '''
             }
         }
