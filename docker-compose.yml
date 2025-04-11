@@ -1,7 +1,13 @@
 version: '3'
 services:
-  sudoku-server:
+  sudoku-app:
     build: .
-    container_name: sudoku_download
+    container_name: sudoku_app
     ports:
-      - "8080:80"
+      - "9090:9090"
+    networks:
+      - devops_net
+
+networks:
+  devops_net:
+    driver: bridge

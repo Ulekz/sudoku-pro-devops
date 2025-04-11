@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // Variables opcionales si necesitas usarlas luego
         JAR_NAME = "SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar"
     }
 
@@ -14,14 +13,14 @@ pipeline {
             }
         }
 
-        stage('✅ Confirmar build') {
+        stage('✅ Verificar archivo .jar') {
             steps {
                 script {
                     def jarPath = "target/${env.JAR_NAME}"
                     if (fileExists(jarPath)) {
                         echo "✅ Build exitoso. Archivo generado: ${jarPath}"
                     } else {
-                        error "❌ Falló la compilación. No se encontró el .jar esperado: ${jarPath}"
+                        error "❌ Falló la compilación. No se encontró el archivo .jar: ${jarPath}"
                     }
                 }
             }
@@ -30,10 +29,10 @@ pipeline {
 
     post {
         success {
-            echo "🎉 Paso 2 completado correctamente. ¡La app se compiló!"
+            echo "🎉 Compilación y tests pasaron exitosamente."
         }
         failure {
-            echo "❌ El paso de compilación falló. Revisa los errores de Maven arriba."
+            echo "❌ La compilación o los tests fallaron. Revisa los logs arriba."
         }
     }
 }
