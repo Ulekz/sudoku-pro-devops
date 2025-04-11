@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_VM_USER = 'ec2-user'
-        DOCKER_VM_IP = '18.207.242.61'
+        DOCKER_VM_IP = '54.236.118.67'
         REMOTE_KEY = '/var/lib/jenkins/.ssh/docker-key.pem'
     }
 
