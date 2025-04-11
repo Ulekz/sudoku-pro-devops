@@ -1,17 +1,7 @@
-version: '3.8'
-
+version: '3'
 services:
-  sudoku-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: sudoku-app
+  sudoku-server:
+    build: .
+    container_name: sudoku_download
     ports:
-      - "9090:8080"
-    networks:
-      - devops_net
-    restart: unless-stopped
-
-networks:
-  devops_net:
-    driver: bridge
+      - "8080:80"

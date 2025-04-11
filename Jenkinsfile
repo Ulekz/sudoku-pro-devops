@@ -2,38 +2,64 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HOST = 'ec2-user@18.206.115.220'  // IP de la VM Docker
-        REMOTE_PATH = "/home/ec2-user/app"
-        PEM_KEY = "/var/lib/jenkins/docker-key.pem"
+        // Usuario e IP de la VM donde está Docker
+        DOCKER_VM_USER = 'ec2-user'
+        DOCKER_VM_IP = '44.204.81.122' // ⚠️ Actualiza si cambia
+
+        // Ruta de la clave privada en el servidor Jenkins
+        REMOTE_KEY = '/var/lib/jenkins/.ssh/docker-key.pem'
     }
 
     stages {
-        stage('Clonar proyecto') {
+        stage('🧱 Compilar Proyecto con Maven') {
             steps {
-                git url: 'https://github.com/Ulekz/sudoku-pro-devops.git', branch: 'main'
+                echo '🚧 Compilando el proyecto...'
+                sh 'mvn clean package'
             }
         }
 
-        stage('Compilar con Maven') {
+        stage('📦 Preparar .jar para Docker') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                echo '📂 Preparando archivo .jar en carpeta html/'
+                sh '''
+                    mkdir -p html
+                    cp target/sudoku-1.0-jar-with-dependencies.jar html/sudoku.jar
+                '''
             }
         }
 
-        stage('Copiar archivos por SSH') {
+        stage('🚀 Copiar archivos a VM Docker') {
             steps {
-                sh """
-                scp -i ${PEM_KEY} -r * ${DOCKER_HOST}:${REMOTE_PATH}
-                """
+                echo '📤 Transfiriendo archivos a la máquina Docker...'
+                sh '''
+                    scp -i $REMOTE_KEY -o StrictHostKeyChecking=no -r * \
+                    $DOCKER_VM_USER@$DOCKER_VM_IP:/home/ec2-user/sudoku-deploy
+                '''
             }
         }
 
-        stage('Desplegar app Sudoku en Docker') {
+        stage('🐳 Desplegar aplicación con Docker Compose') {
             steps {
-                sh """
-                ssh -i ${PEM_KEY} ${DOCKER_HOST} 'cd ${REMOTE_PATH} && docker-compose down && docker-compose up -d --build'
-                """
+                echo '⚙️ Ejecutando docker-compose remotamente...'
+                sh '''
+                    ssh -i $REMOTE_KEY -o StrictHostKeyChecking=no $DOCKER_VM_USER@$DOCKER_VM_IP '
+                        cd /home/ec2-user/sudoku-deploy &&
+                        docker-compose down || true &&
+                        docker-compose build &&
+                        docker-compose up -d
+                    '
+                '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Despliegue exitoso. El .jar está disponible para descarga.'
+            echo "🌐 Accede a: http://$DOCKER_VM_IP:8080/sudoku.jar"
+        }
+        failure {
+            echo '❌ Algo falló en el pipeline. Revisa los logs para más detalles.'
         }
     }
 }
