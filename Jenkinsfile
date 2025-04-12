@@ -4,7 +4,7 @@ pipeline {
     environment {
         JAR_NAME = "SudokuV1-1.0-SNAPSHOT-jar-with-dependencies.jar"
         DOCKER_USER = "ec2-user"
-        DOCKER_HOST = "44.211.132.177"
+        DOCKER_HOST = "54.196.158.36"
         REMOTE_PATH = "/home/ec2-user/sudoku-deploy"
     }
 
