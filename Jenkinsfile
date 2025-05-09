@@ -14,6 +14,7 @@ pipeline {
                 echo '🚧 Compilando el proyecto...'
                 sh 'mvn clean package'
             }
+
         }
 
         stage('✅ Verificar archivo .jar') {
